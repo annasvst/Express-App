@@ -1,11 +1,10 @@
 import { Router } from 'express'
+import { v1UsersRouter, v2UsersRouter } from '../resources/users/routes'
 
-const router: Router = Router()
+const v1Router: Router = Router()
+v1Router.use('/users', v1UsersRouter)
 
-// import routes
-import userRouter from '../resources/users/routes'
+const v2Router: Router = Router()
+v2Router.use('/users', v2UsersRouter)
 
-// Higher level routes definition
-router.use('/user', userRouter)
-
-export default router
+export { v1Router, v2Router }

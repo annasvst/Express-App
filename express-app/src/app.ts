@@ -2,7 +2,7 @@ import express, { Application, Request, Response } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import compression from 'compression'
-import routes from './common/routes'
+import { v1Router, v2Router } from './common/routes'
 import unknownEndpoint from './middlewares/unknownEndpoint'
 
 // to use env variables
@@ -28,7 +28,8 @@ app.get('/ping', (req: Request, res: Response) => {
   res.status(200).send('pong');
 })
 
-app.use('/v1/', routes)
+app.use('/v1/', v1Router)
+app.use('/v2/', v2Router)
 
 // Handle unknown endpoints
 app.use('*', unknownEndpoint)

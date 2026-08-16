@@ -1,11 +1,11 @@
 import { Router } from 'express'
 import userController from './controller'
 
-const router = Router()
+const v1UsersRouter = Router()
+v1UsersRouter.route('/').get(userController.getAll)
+v1UsersRouter.route('/').post(userController.createV1)
 
-// define routes
-router.route('/').get(userController.getAll)
-router.route('/').post(userController.createV1) // <-- POST isteğini buraya bağlıyoruz
-router.route('/').post(userController.createV2)
- 
-export default router
+const v2UsersRouter = Router()
+v2UsersRouter.route('/').post(userController.createV2)
+
+export { v1UsersRouter, v2UsersRouter }
