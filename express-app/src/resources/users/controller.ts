@@ -1,7 +1,19 @@
 import { Request, Response, NextFunction } from 'express'
+import z from 'zod'
 
 
-// 1. GET /v1/users -> Mevcut dummy data mantığı
+const createUserV1Schema = z.object({
+  username: z.string().min(2, 'Username is required'),
+  email: z.string().email('Invalid email format'),
+})
+
+const createUserV2Schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  surname: z.string().min(1, 'Surname is required'),
+  email: z.string().email('Invalid email format'),
+})
+
+// 1. GET /v1/users
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = [{ id: 1, username: 'muge123', email: 'muge@example.com' },
@@ -17,11 +29,16 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 // 2. POST /v1/users -> username ve email bekler
 const createV1 = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, email } = req.body || {}
+    const validation = createUserV1Schema.safeParse(req.body);
 
-    if (!username || !email) {
-      return res.status(400).json({ error: 'Username and email are required' })
+    if (!validation.success) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: validation.error.flatten().fieldErrors,
+      });
     }
+
+    const { username, email } = validation.data;
 
     const newUser = {
       username,
@@ -36,14 +53,20 @@ const createV1 = async (req: Request, res: Response, next: NextFunction) => {
 }
 
 
+
 // 3. POST /v2/users -> name, surname ve email bekler
 const createV2 = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, surname, email } = req.body || {}
+    const validation = createUserV2Schema.safeParse(req.body);
 
-    if (!name || !surname || !email) {
-      return res.status(400).json({ error: 'Name, surname and email are required' })
+    if (!validation.success) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: validation.error.flatten().fieldErrors,
+      });
     }
+
+    const { name, surname, email } = validation.data;
 
     const newUserV2 = {
       name,
